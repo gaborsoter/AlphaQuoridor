@@ -1,4 +1,4 @@
-a = [[1,2], [4,5], [1,4]]
-
-
-print(a.index([1,4]))
+for i in range(10):
+	if i == 5:
+		i += 1
+	print(i)

@@ -101,6 +101,35 @@ class Game:
 					except:
 						pass
 
+		# Check whether the walls block the path between the players and the top or bottom rows
+		# unique, counts = np.unique(self.B_walls, return_counts=True)
+		# unique_values = dict(zip(unique, counts))
+		# counter = int(unique_values.get(-1, "") / 2)
+		# print(counter)
+		print(allowed_walls)
+
+		counter = 0
+		for i in range(len(allowed_walls)):
+			try:	
+				print(i, allowed_walls[i], counter)
+				if self.A_walls[9][0] == -1: # check whether A has any unused walls
+					self.A_walls[9] = allowed_walls[i - counter] # modify the board
+					if self.connected() == False: # check whether move is allowed
+						print(allowed_walls[i-counter],' ','False')
+						allowed_walls.pop(i-counter) # throw it away if blocks the path
+						counter += 1
+					self.A_walls[9] = [-1, -1] # restore the board
+				else:
+					self.B_walls[9] = allowed_walls[i-counter] # modify the board
+					if self.connected() == False: # check whether move is allowed
+						print(allowed_walls[i-counter],' ','False')
+						allowed_walls.pop(i-counter) # throw it away if blocks the path
+						counter += 1
+					self.B_walls[9] = [-1, -1] # restore the board
+			except:
+				pass
+
+
 		return allowed_walls
 
 	# initialising walls
@@ -165,15 +194,12 @@ class Game:
 game = Game()
 
 game.initWalls()
-
-game.A_walls[0] = [154, 155]
-
 game.A_walls[0] = [4, 14]
 game.A_walls[1] = [126, 127]
-game.A_walls[2] = [6, 16]
 
 allowedmoves = [90]
 
-a = game.connected()
+a = game.allowedWalls()
 
 print(a)
+

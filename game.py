@@ -1,7 +1,6 @@
 import numpy as np
 
-# the game
-
+# the game class
 class Game:
 	def __init__(self):
 		self.currentPlayer = 0 # 0:A, 1:B
@@ -15,13 +14,12 @@ class Game:
 		self.right = [10, 21, 32, 43, 54, 65, 76, 87, 98, 109, 120]
 		self.top = [110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120]
 		self.walls = []
+		self.set_bottom = set(self.bottom)
+		self.set_top = set(self.top)
 
+	# allowed moves of the figures
 	def allowedMoves(self, position, position_opponent):
 		allowed_moves = []
-
-		# this is not going to work with the new representation of the walls, the arrays need to be flattened
-
-		print('flattened array:',self.A_walls.flatten())
 
 		# moving down
 		if position not in self.bottom:
@@ -57,8 +55,8 @@ class Game:
 
 		return allowed_moves
 
+	# outputs the crossing pair of a wall
 	def crossingWallPair(self, wall):
-		# outputs the crossing pair of a wall
 		if wall[0] >= 110:
 			pair = self.walls[self.walls.index(wall) + 100]
 		else:
@@ -66,6 +64,7 @@ class Game:
 
 		return pair
 
+	# removing wall positions that are not allowed
 	def allowedWalls(self):
 		allowed_walls = np.copy(self.walls).tolist()
 		allowed_walls.pop(allowed_walls.index(self.crossingWallPair(list(self.A_walls[0]))))
@@ -104,6 +103,7 @@ class Game:
 
 		return allowed_walls
 
+	# initialising walls
 	def initWalls(self):
 		for j in range(10):
 			for i in range(10):
@@ -114,11 +114,53 @@ class Game:
 				self.walls.append([0+i*10+j,10+i*10+j])
 		return
 
-
 	def convertTo2D(self, state):
 		# for visualisation
 		board = np.zeros([11, 11])
 		return
+
+	# There should be at least one path that connects the figures and the opposite row.
+	# The algorithm takes one step at each iteration and collects all the possible moves.
+	# After the collection, it checks whether there is any position that is in the opposite line.
+	def connected(self):
+		connected = True
+		#-----------------------------------
+		# player A
+		pmoves = [self.A_position] # this is neccessary to start the algorithm
+		# collect all the possible moves, usually takes 15-20 iteration
+		for i in range(20):
+			for j in range(len(pmoves)):
+				a = game.allowedMoves(pmoves[j], 39)
+				for k in range(len(a)):
+					if a[k] not in pmoves:
+						pmoves.append(a[k])	
+
+		# check whether there is a possible route to the top or bottom rows
+		set_pmoves = set(pmoves)
+		intersect_top = list(self.set_top.intersection(set_pmoves))
+		intersect_bottom = list(self.set_bottom.intersection(set_pmoves))
+
+		if len(intersect_top) == 0 or len(intersect_bottom) == 0:
+			connected = False
+
+		#-----------------------------------
+		# player B - same as player A
+		pmoves = [self.B_position]
+		for i in range(20):
+			for j in range(len(pmoves)):
+				a = game.allowedMoves(pmoves[j], 39)
+				for k in range(len(a)):
+					if a[k] not in pmoves:
+						pmoves.append(a[k])	
+
+		set_pmoves = set(pmoves)
+		intersect_top = list(self.set_top.intersection(set_pmoves))
+		intersect_bottom = list(self.set_bottom.intersection(set_pmoves))
+
+		if len(intersect_top) == 0 or len(intersect_bottom) == 0:
+			connected = False
+
+		return connected
 
 game = Game()
 
@@ -126,9 +168,12 @@ game.initWalls()
 
 game.A_walls[0] = [154, 155]
 
-print(game.allowedWalls())
+game.A_walls[0] = [4, 14]
+game.A_walls[1] = [126, 127]
+game.A_walls[2] = [6, 16]
 
+allowedmoves = [90]
 
+a = game.connected()
 
-
-
+print(a)

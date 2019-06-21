@@ -1,4 +1,7 @@
-for i in range(10):
-	if i == 5:
-		i += 1
-	print(i)
+import tensorflow as tf 
+
+tf.enable_eager_execution()
+
+print(tf.executing_eagerly())
+
+print(tf.add(2, 3))
